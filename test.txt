@@ -1,1 +1,0 @@
-This is a test to check whether the file on my computer is linked to my repository on Github
