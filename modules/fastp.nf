@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 
 process fastp_trim {
 
-    tag "Trimming for ${sample_id}"
+    tag "Trimming for sample ${sample_id}"
 
     container 'staphb/fastp:1.1.0'
 

@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 
 process fastqc_trimmed {
 
-    tag "QC of trimmed reads for ${sample_id}"
+    tag "QC of trimmed reads for sample ${sample_id}"
 
     container 'biocontainers/fastqc:v0.11.9_cv8'
 
