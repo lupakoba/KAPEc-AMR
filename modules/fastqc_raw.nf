@@ -3,6 +3,8 @@ nextflow.enable.dsl=2
 
 process fastqc_raw {
 
+    tag "QC of raw reads for ${sample_id}"
+    
     container 'biocontainers/fastqc:v0.11.9_cv8'
 
     publishDir "results/fastqc_raw", mode: 'copy'

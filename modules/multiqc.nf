@@ -3,6 +3,8 @@ nextflow.enable.dsl=2
 
 process multiqc {
 
+    tag "Merge of QC reports"
+
     container 'quay.io/biocontainers/multiqc:1.33--pyhdfd78af_0'
 
     publishDir "results/multiqc", mode: 'copy'
