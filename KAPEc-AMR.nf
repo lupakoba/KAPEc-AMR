@@ -11,6 +11,27 @@ include { multiqc } from './modules/multiqc.nf'
 
 workflow {
 
+    log.info """
+\033[1;36m                                                            
+ ▄    ▄   ▄▄   ▄▄▄▄▄  ▄▄▄▄▄▄                 ▄▄   ▄    ▄ ▄▄▄▄▄ 
+ █  ▄▀    ██   █   ▀█ █       ▄▄▄            ██   ██  ██ █   ▀█
+ █▄█     █  █  █▄▄▄█▀ █▄▄▄▄▄ █▀  ▀          █  █  █ ██ █ █▄▄▄▄▀
+ █  █▄   █▄▄█  █      █      █       ▀▀▀    █▄▄█  █ ▀▀ █ █   ▀▄
+ █   ▀▄ █    █ █      █▄▄▄▄▄ ▀█▄▄▀         █    █ █    █ █    ▀
+                                                               
+                                                               
+╔════════════════════════════════════════════════════════════════╗
+║    Pipeline for WGS analysis of Gram-negative AMR Bacteria     ║
+║    (Klebsiella, Acinetobacter, Pseudomonas, Escherichia)       ║
+╚════════════════════════════════════════════════════════════════╝
+\033[0m
+
+Input    : ${params.input}
+Profile  : ${workflow.profile}
+Run name : ${workflow.runName}
+Started  : ${workflow.start}
+"""
+
     // Canal por muestra (R1 + R2)
     read_ch = channel.fromFilePairs(params.input ?: 'data/*_{R1,R2}.fastq.gz', size: 2)
 
