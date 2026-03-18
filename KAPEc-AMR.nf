@@ -2,22 +2,32 @@
 nextflow.enable.dsl=2
 
 // ------------------------
-// Incluir el módulo FastQC
+// Incluir módulos
 // ------------------------
-include { fastqc_analysis_1 } from './modules/fastqc_1.nf'
+include { fastqc_raw } from './modules/fastqc_raw.nf'
+include { fastqc_trimmed } from './modules/fastqc_trimmed.nf'
+include { fastp_trim } from './modules/fastp.nf'
+include { multiqc } from './modules/multiqc.nf'
 
-// ------------------------
-// Workflow principal
-// ------------------------
 workflow {
 
-    // Canal de todos los FASTQ
-    reads_ch = channel.fromPath(params.input ?: 'data/*.fastq.gz')
+    // Canal por muestra (R1 + R2)
+    read_ch = channel.fromFilePairs(params.input ?: 'data/*_{R1,R2}.fastq.gz', size: 2)
 
-    // Llamar al proceso FastQC
-    fastqc_result = fastqc_analysis_1(reads_ch)
+    // FastQC raw
+    fastqc_raw_result = fastqc_raw(read_ch)
 
-    // Si quieres usar los outputs
-    fastqc_html_files = fastqc_result.fastqc_html
-    fastqc_zip_files  = fastqc_result.fastqc_zip
+    // Trimming con fastp
+    fastp_result = fastp_trim(read_ch)
+
+    // FastQC post-trim
+    fastqc_trimmed_result = fastqc_trimmed(fastp_result.trimmed_reads)
+
+    // Preparar archivos para MultiQC
+    multiqc_input = fastqc_raw_result.fastqc_zip
+        .mix(fastqc_trimmed_result.fastqc_zip)
+        .collect()   // <-- agrupa todo en un solo canal
+
+    // Ejecutar MultiQC
+    multiqc(multiqc_input)
 }
