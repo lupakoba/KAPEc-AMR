@@ -1,6 +1,8 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
+params.input = params.input ?: 'data/*_{R1,R2}.fastq.gz'
+
 // ------------------------
 // Incluir módulos
 // ------------------------
@@ -8,6 +10,7 @@ include { fastqc_raw } from './modules/fastqc_raw.nf'
 include { fastqc_trimmed } from './modules/fastqc_trimmed.nf'
 include { fastp_trim } from './modules/fastp.nf'
 include { multiqc } from './modules/multiqc.nf'
+include { KRAKEN2 } from './modules/kraken2.nf'
 
 workflow {
 
@@ -51,4 +54,26 @@ Started  : ${workflow.start}
 
     // Ejecutar MultiQC
     multiqc(multiqc_input)
+
+    // ------------------------
+    // DB Kraken2 (ROBUSTO)
+    // ------------------------
+    db_file = file(params.kraken2_db)
+
+    // ------------------------
+    // Preparar input para Kraken2
+    // ------------------------
+    kraken2_input = fastp_result.trimmed_reads
+        .map { sample_id, reads ->
+            tuple(sample_id, reads, db_file)
+        }
+
+    // ------------------------
+    // Ejecutar Kraken2
+    // ------------------------
+    kraken2_result = kraken2_input | KRAKEN2
 }
+
+
+
+

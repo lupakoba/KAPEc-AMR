@@ -2,4 +2,5 @@
 /results/*
 /work/*
 /data/*
+/db*
 .nextflow/*
