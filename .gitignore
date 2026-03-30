@@ -2,5 +2,5 @@
 /results/*
 /work/*
 /data/*
-/db*
 .nextflow/*
+/db/kraken_db/*
