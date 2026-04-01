@@ -6,6 +6,7 @@ nextflow.enable.dsl=2
 // ------------------------
 params.input       = params.input ?: 'data/*_{R1,R2}.fastq.gz'
 params.kraken2_db  = params.kraken2_db ?: '/PROJECTES/MICROBIOLOGIA/luciano/KAPEc-AMR/db/kraken_db'
+params.outdir      = params.outdir ?: 'results'
 
 // ------------------------
 // Incluir módulos
@@ -13,10 +14,13 @@ params.kraken2_db  = params.kraken2_db ?: '/PROJECTES/MICROBIOLOGIA/luciano/KAPE
 include { fastqc_raw }      from './modules/fastqc_raw.nf'
 include { fastqc_trimmed }  from './modules/fastqc_trimmed.nf'
 include { fastp_trim }      from './modules/fastp.nf'
-include { multiqc }         from './modules/multiqc.nf'
+include { MULTIQC_FASTQC }  from './modules/multiqc.nf'
 include { KRAKEN2 }         from './modules/kraken2.nf'
 include { SPADES_ASSEMBLY } from './modules/spades.nf'
 include { MLST }            from './modules/mlst.nf'
+include { QUAST }           from './modules/quast.nf'
+include { MULTIQC_QUAST }   from './modules/multiqc_quast.nf'
+include { CHECKM2 }         from './modules/checkm2.nf'
 
 workflow {
 
@@ -76,7 +80,7 @@ Started  :  ${workflow.start}
     // ------------------------
     // Ejecutar MultiQC
     // ------------------------
-    multiqc(multiqc_input)
+    MULTIQC_FASTQC(multiqc_input)
 
     // ------------------------
     // Preparar input para Kraken2
@@ -100,9 +104,41 @@ Started  :  ${workflow.start}
     spades_result = fastp_result.trimmed_reads | SPADES_ASSEMBLY
 
     // ------------------------
+    // QUAST por muestra
+    // ------------------------
+    quast_result = spades_result | QUAST
+
+    // ------------------------
+    // Preparar inputs para MultiQC (QUAST)
+    // ------------------------
+    quast_dirs = quast_result
+        .map { sample_id, dir -> dir }
+
+    // Agrupar todos los resultados
+    quast_dirs_collected = quast_dirs.collect()
+
+    // ------------------------
+    // MultiQC de ensamblaje
+    // ------------------------
+    MULTIQC_QUAST(quast_dirs_collected)
+
+
+    // ------------------------
     // Ejecutar MLST (a partir de los ensamblados)
     // ------------------------
     mlst_result = spades_result | MLST
+
+    
+    // ----------------------------------------------------------------
+    // Definición del canal para la base de datos de CheckM2
+    // ----------------------------------------------------------------
+    checkm2_db_ch = Channel
+        .fromPath(params.checkm2_db_file, checkIfExists: true)
+        .collect()
+
+    // El resto sigue igual...
+    checkm2_input = spades_result.combine(checkm2_db_ch)
+    checkm2_results = CHECKM2(checkm2_input)
 
 
 }

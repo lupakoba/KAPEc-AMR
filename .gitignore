@@ -4,3 +4,4 @@
 /data/*
 .nextflow/*
 /db/kraken_db/*
+/db/checkm2_db/*
