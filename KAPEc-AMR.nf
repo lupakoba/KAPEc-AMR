@@ -21,6 +21,8 @@ include { MLST }            from './modules/mlst.nf'
 include { QUAST }           from './modules/quast.nf'
 include { MULTIQC_QUAST }   from './modules/multiqc_quast.nf'
 include { CHECKM2 }         from './modules/checkm2.nf'
+include { BAKTA }           from './modules/bakta.nf'
+include { AMRFINDERPLUS }   from './modules/amrfinder.nf'
 
 workflow {
 
@@ -139,6 +141,32 @@ Started  :  ${workflow.start}
     // El resto sigue igual...
     checkm2_input = spades_result.combine(checkm2_db_ch)
     checkm2_results = CHECKM2(checkm2_input)
+
+
+
+
+    // Canal de la DB de Bakta
+    ch_bakta_db = Channel.value(true) 
+
+    // Preparar inputs para Bakta
+    ch_for_bakta = spades_result.map { tuple ->
+        def (sample_id, fasta) = tuple
+        return [sample_id, fasta]
+    }
+
+    // Ejecutar Bakta
+    BAKTA(ch_for_bakta)
+
+
+    //  JOIN correcto por sample_id
+    amrfinder_input = spades_result.join(mlst_result)
+
+    // Ejecutar
+    amrfinder_result = amrfinder_input | AMRFINDERPLUS
+
+
+
+
 
 
 }
