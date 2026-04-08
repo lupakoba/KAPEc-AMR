@@ -5,3 +5,5 @@
 .nextflow/*
 /db/kraken_db/*
 /db/checkm2_db/*
+/db/bakta_db/*
+/db/otro/*
