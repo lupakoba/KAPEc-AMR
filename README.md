@@ -55,8 +55,10 @@ The expected route for the bakta database is: KAPEc-AMR(repo name)/db/bakta_db/d
 
 OPTIONS
 
-    -profile    You can state whether the run would be in a single computer (-profile docker) or on 
-                a HPC compatible with Singularity (-profile singularity), in both cases local executor is used. A third option is included for SLURM scheluder (-profile singularity_slurm) but have not been tested yet.
+    -profile    You can state whether the run would be in a single computer (-profile docker)
+                or on a HPC compatible with Singularity (-profile singularity), in both cases 
+                local executor is used. A third option is included for SLURM schelduler 
+                (-profile singularity_slurm) but have not been tested yet.
 
 
 
