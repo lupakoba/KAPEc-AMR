@@ -38,22 +38,22 @@ The expected route for the bakta database is: KAPEc-AMR(repo name)/db/bakta_db/d
 
 Illumina pipeline summary:
 
-1. Quality control of reads: Raw read QC is assessed with FastQC. Low quality bases, adapters and sequencing artifacts (such as Poly-Gs) are removed with FastP. Then trimmed reads QC is assessed. Reports are summarised with MultiQC. 
+    1. Quality control of reads: Raw read QC is assessed with FastQC. Low quality bases, adapters and sequencing artifacts (such as Poly-Gs) are removed with FastP. Then trimmed reads QC is assessed. Reports are summarised with MultiQC. 
 
-2. Taxonomic identification: Trimmed reads are analysed with Kraken2 -> only the .report file is generated, to manually check the genus/species (Horrific screw-ups can happen sometimes :P)
+    2. Taxonomic identification: Trimmed reads are analysed with Kraken2 -> only the .report file is generated, to manually check the genus/species (Horrific screw-ups can happen sometimes :P)
 
-3. De novo assembly: For now, only de novo assembly will be supported and done with SPAdes. However, we are considering a --reference mode option with variant calling (i.e mutant analysis) in a future release.
+    3. De novo assembly: For now, only de novo assembly will be supported and done with SPAdes. However, we are considering a --reference mode option with variant calling (i.e mutant analysis) in a future release.
 
-4. Quality check, completeness and contamination levels of assemblies: Quality metrics are obtained using QUAST and the overall metrics are condensed in a simplified report using MultiQC, while completeness and contamination levels are assessed with CheckM2. 
+    4. Quality check, completeness and contamination levels of assemblies: Quality metrics are obtained using QUAST and the overall metrics are condensed in a simplified report using MultiQC, while completeness and contamination levels are assessed with CheckM2. 
 
-5. Multi Locus Sequence Typing (MLST): MLST is determined using MLST tool. 
+    5. Multi Locus Sequence Typing (MLST): MLST is determined using MLST tool. 
 
-6. Gene annotation: Gene annotation is obtained using BAKTA (since Prokka does not have updates anymore :/ )
+    6. Gene annotation: Gene annotation is obtained using BAKTA (since Prokka does not have updates anymore :/ )
 
-7. Prediction of Antimicrobial resistance genes: Antimicrobial resistance determinants are predicted using AMRfinderplus (which uses a curated NCBI database, nice!). REMEMBER THAT THESE TOOLS ARE GOOD AS THEIR DATABASES, and some additional analysis must be made. The --organism option in the AMRfinderplus script is automated, derived from the MLST result (If no MLST is derived or is a species outside the list by MLST tool such as Stenotrophomonas maltophilia, it will run without --organism option). 
+    7. Prediction of Antimicrobial resistance genes: Antimicrobial resistance determinants are predicted using AMRfinderplus (which uses a curated NCBI database, nice!). REMEMBER THAT THESE TOOLS ARE GOOD AS THEIR DATABASES, and some additional analysis must be made. The --organism option in the AMRfinderplus script is automated, derived from the MLST result (If no MLST is derived or is a species outside the list by MLST tool such as Stenotrophomonas maltophilia, it will run without --organism option). 
 
 
-    OPTIONS
+OPTIONS
 
     -profile    You can state whether the run would be in a single computer (-profile docker) or on 
                 a HPC compatible with Singularity (-profile singularity), in both cases local executor is used. A third option is included for SLURM scheluder (-profile singularity_slurm) but have not been tested yet.
