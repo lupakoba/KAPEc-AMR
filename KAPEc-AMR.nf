@@ -23,6 +23,13 @@ include { MULTIQC_QUAST }   from './modules/multiqc_quast.nf'
 include { CHECKM2 }         from './modules/checkm2.nf'
 include { BAKTA }           from './modules/bakta.nf'
 include { AMRFINDERPLUS }   from './modules/amrfinder.nf'
+include { ABRICATE_DB }     from './modules/abricate_db.nf'
+include { ABRICATE_VFDB }   from './modules/virulence.nf'
+include { MOB_RECON }       from './modules/mobrecon.nf'  
+include { KAPTIVE_DB }      from './modules/kaptive_db.nf'
+include { KAPTIVE }         from './modules/kaptive.nf'
+
+
 
 workflow {
 
@@ -143,8 +150,6 @@ Started  :  ${workflow.start}
     checkm2_results = CHECKM2(checkm2_input)
 
 
-
-
     // Canal de la DB de Bakta
     ch_bakta_db = Channel.value(true) 
 
@@ -164,9 +169,46 @@ Started  :  ${workflow.start}
     // Ejecutar
     amrfinder_result = amrfinder_input | AMRFINDERPLUS
 
+    // Virulence genes with ABRICATE (VFDB)
+    
+    abricate_db_ch = ABRICATE_DB()
+
+   
+        abricate_input = spades_result
+        .combine(abricate_db_ch)
+        .map { sample_id, assembly, db ->
+            tuple(sample_id, assembly, db)
+        }
+
+    abricate_results = abricate_input | ABRICATE_VFDB
+
+    mob_result = spades_result | MOB_RECON
+
+
+    
+
+    
+    // 1. Descarga/Carga de DB
+    KAPTIVE_DB()
+
+    // 2. Unir los resultados de Spades (ID, Assembly) con MLST (ID, TSV)
+    // Esto crea un canal de tuplas: [sample_id, assembly, mlst_tsv]
+    kaptive_sample_ch = spades_result.join(mlst_result)
+
+    // 3. Ejecución de KAPTIVE
+    // Pasamos dos argumentos separados como pide el módulo:
+    //   - El canal de las muestras
+    //   - El canal de la DB (usando .collect() para que sea un solo objeto disponible para todos)
+    KAPTIVE(
+        kaptive_sample_ch, 
+        KAPTIVE_DB.out.db_files.collect()
+    )
+    
+
+    
 
 
 
 
-
+    
 }
