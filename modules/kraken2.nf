@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 
 process KRAKEN2 {
 
-    tag "Classification: ${sample_id}"
+    tag "Taxonomic classification for sample ${sample_id}"
 
     // Contenedor
     container "${params.kraken2_container}"

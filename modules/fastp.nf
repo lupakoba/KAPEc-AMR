@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-process fastp_trim {
+process FASTP {
 
     tag "Trimming for sample ${sample_id}"
 

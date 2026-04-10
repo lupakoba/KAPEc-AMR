@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 
 process MULTIQC_FASTQC {
 
-    tag "multiqc_reads"
+    tag "Joining FastQC reports"
 
     publishDir "${params.outdir}/multiqc/reads", mode: 'copy'
 

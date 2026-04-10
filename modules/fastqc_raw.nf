@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-process fastqc_raw {
+process FASTQC_RAW {
 
     tag "QC of raw reads for sample ${sample_id}"
     

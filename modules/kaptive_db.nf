@@ -1,5 +1,5 @@
 process KAPTIVE_DB {
-    tag "Kaptive Multi-Species DB"
+    tag "Verifying Kaptive database files"
     publishDir "${params.kaptive_db}", mode: 'copy'
 
     output:

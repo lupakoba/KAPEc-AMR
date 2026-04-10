@@ -6,7 +6,7 @@ params.mlst_container = params.mlst_container ?: "docker.io/staphb/mlst:2.19.0"
 
 process MLST {
 
-    tag "MLST typing: ${sample_id}"
+    tag "MLST typing for genome ${sample_id}"
 
     container "${params.mlst_container}"
 

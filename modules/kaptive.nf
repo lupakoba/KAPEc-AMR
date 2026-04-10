@@ -1,5 +1,5 @@
 process KAPTIVE {
-    tag "Kaptive: ${sample_id}"
+    tag "Capsular Loci inference for genome ${sample_id}"
     
     // Asegúrate de que esta imagen sea la que tiene el comando 'kaptive'
     container "${params.kaptive_container}"
@@ -45,7 +45,7 @@ process KAPTIVE {
         kaptive assembly "\$O_DB" "${assembly}" -o "${sample_id}_kaptive_ocl.tsv"
 
     else
-        echo "Species \$species_raw not supported by Kaptive logic." > ${sample_id}_species_not_supported.txt
+        echo "Species \$species_raw not supported by Kaptive (only Acinetobacter and Klebsiella)." > ${sample_id}_species_not_supported.txt
         touch "${sample_id}_kaptive_kl.tsv"
         touch "${sample_id}_kaptive_ocl.tsv"
     fi

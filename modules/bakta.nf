@@ -2,11 +2,12 @@
 nextflow.enable.dsl=2
 
 process BAKTA {
-    tag "$sample_id"
+    tag "Annotation for genome ${sample_id}"
+
     container "${params.bakta_container}"
+
     publishDir "${params.outdir}/bakta", mode: 'copy'
 
-    // Mantengo tus recursos, 64GB es excelente para evitar cuellos de botella por RAM
     cpus 4
     memory '64 GB'
 
@@ -14,7 +15,6 @@ process BAKTA {
     tuple val(sample_id), path(fasta)
 
     output:
-    // He ajustado el glob de salida para que sea más robusto
     tuple val(sample_id), path("${sample_id}/"), emit: results
     tuple val(sample_id), path("${sample_id}/${sample_id}.gff3"), emit: gff
     path "versions.yml", emit: versions

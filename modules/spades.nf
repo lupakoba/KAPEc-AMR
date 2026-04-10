@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 
 process SPADES_ASSEMBLY {
 
-    tag "${sample_id}"
+    tag "De novo assembly for sample ${sample_id}"
 
     publishDir "${params.outdir}/spades", mode: 'copy'
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-process ABRICATE_VFDB {
+process ABRICATE_VF {
 
-    tag "Abricate VFDB: ${sample_id}"
+    tag "Prediction of virulence factors for genome ${sample_id}"
 
     container "${params.abricate_container}"
 

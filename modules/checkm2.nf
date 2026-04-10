@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 process CHECKM2 {
-    tag "${sample_id}"
+    tag "Assessing completeness and contamination for genome ${sample_id}"
     container "${params.checkm2_container}"
     
     cpus 8

@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 
 process MULTIQC_QUAST {
 
-    tag "multiqc_quast"
+    tag "Joining QUAST reports"
 
     publishDir "${params.outdir}/multiqc/assembly", mode: 'copy'
 

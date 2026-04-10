@@ -11,9 +11,9 @@ params.outdir      = params.outdir ?: 'results'
 // ------------------------
 // Incluir módulos
 // ------------------------
-include { fastqc_raw }      from './modules/fastqc_raw.nf'
-include { fastqc_trimmed }  from './modules/fastqc_trimmed.nf'
-include { fastp_trim }      from './modules/fastp.nf'
+include { FASTQC_RAW }      from './modules/fastqc_raw.nf'
+include { FASTQC_TRIMMED }  from './modules/fastqc_trimmed.nf'
+include { FASTP }           from './modules/fastp.nf'
 include { MULTIQC_FASTQC }  from './modules/multiqc.nf'
 include { KRAKEN2 }         from './modules/kraken2.nf'
 include { SPADES_ASSEMBLY } from './modules/spades.nf'
@@ -24,11 +24,12 @@ include { CHECKM2 }         from './modules/checkm2.nf'
 include { BAKTA }           from './modules/bakta.nf'
 include { AMRFINDERPLUS }   from './modules/amrfinder.nf'
 include { ABRICATE_DB }     from './modules/abricate_db.nf'
-include { ABRICATE_VFDB }   from './modules/virulence.nf'
+include { ABRICATE_VF }     from './modules/virulence.nf'
 include { MOB_RECON }       from './modules/mobrecon.nf'  
 include { KAPTIVE_DB }      from './modules/kaptive_db.nf'
 include { KAPTIVE }         from './modules/kaptive.nf'
-
+include { ECTYPER }         from './modules/ectyper.nf'
+include { PASTY }           from './modules/pasty.nf'
 
 
 workflow {
@@ -55,160 +56,187 @@ Started  :  ${workflow.start}
 """
 
     // ------------------------
-    // Canal por muestra (R1 + R2)
+    // Read (R1 + R2) channel
     // ------------------------
     read_ch = channel.fromFilePairs(params.input, size: 2)
 
     // ------------------------
-    // Canal global con la DB de Kraken2
+    // Channel for KRAKEN2 DB
     // ------------------------
     kraken2_db_ch = Channel.fromPath(params.kraken2_db)   // <- path real como canal
 
     // ------------------------
-    // FastQC raw
+    // FastQC raw reads
     // ------------------------
-    fastqc_raw_result = fastqc_raw(read_ch)
+    fastqc_raw_result = FASTQC_RAW(read_ch)
 
     // ------------------------
-    // Trimming con fastp
+    // Read trimming with fastp
     // ------------------------
-    fastp_result = fastp_trim(read_ch)
+    fastp_result = FASTP(read_ch)
 
     // ------------------------
     // FastQC post-trim
     // ------------------------
-    fastqc_trimmed_result = fastqc_trimmed(fastp_result.trimmed_reads)
+    fastqc_trimmed_result = FASTQC_TRIMMED(fastp_result.trimmed_reads)
 
     // ------------------------
-    // Preparar archivos para MultiQC
+    // Preparing FastQC files for MultiQC 
     // ------------------------
     multiqc_input = fastqc_raw_result.fastqc_zip
         .mix(fastqc_trimmed_result.fastqc_zip)
         .collect()
 
     // ------------------------
-    // Ejecutar MultiQC
+    // MultiQC for FastQC results
     // ------------------------
     MULTIQC_FASTQC(multiqc_input)
 
     // ------------------------
-    // Preparar input para Kraken2
+    // Preparing inputs for Kraken2
     // ------------------------
     kraken2_input_ch = fastp_result.trimmed_reads
         .combine(kraken2_db_ch)         // <- combina cada muestra con la DB
         .map { sample_id, reads, db_file -> tuple(sample_id, reads, db_file) }
 
-    // DEBUG: ver qué llega al proceso Kraken2
-    // kraken2_input_ch.view()
-
     // ------------------------
-    // Ejecutar Kraken2
+    // Kraken2
     // ------------------------
     kraken2_result = kraken2_input_ch | KRAKEN2
 
-
     // ------------------------
-    // Ejecutar SPAdes (ensamblaje)
+    // SPAdes (de novo assembly)
     // ------------------------
     spades_result = fastp_result.trimmed_reads | SPADES_ASSEMBLY
 
     // ------------------------
-    // QUAST por muestra
+    // QUAST per sample
     // ------------------------
     quast_result = spades_result | QUAST
 
     // ------------------------
-    // Preparar inputs para MultiQC (QUAST)
+    // Prepare QUAST directories for MultiQC
     // ------------------------
     quast_dirs = quast_result
         .map { sample_id, dir -> dir }
 
-    // Agrupar todos los resultados
+    // Grouping all QUAST directories into a single list for MultiQC
     quast_dirs_collected = quast_dirs.collect()
 
     // ------------------------
-    // MultiQC de ensamblaje
+    // MultiQC for QUAST results
     // ------------------------
     MULTIQC_QUAST(quast_dirs_collected)
 
-
     // ------------------------
-    // Ejecutar MLST (a partir de los ensamblados)
+    // MLST typing
     // ------------------------
     mlst_result = spades_result | MLST
 
-    
     // ----------------------------------------------------------------
-    // Definición del canal para la base de datos de CheckM2
+    // Channel for CheckM2 DB
     // ----------------------------------------------------------------
     checkm2_db_ch = Channel
         .fromPath(params.checkm2_db_file, checkIfExists: true)
         .collect()
 
-    // El resto sigue igual...
+    // ----------------------------------------------------------------
+    // Preparing inputs for CheckM2 and executing CheckM2
+    // ----------------------------------------------------------------
     checkm2_input = spades_result.combine(checkm2_db_ch)
     checkm2_results = CHECKM2(checkm2_input)
 
-
-    // Canal de la DB de Bakta
+    // ----------------------------------------------------------------
+    // Channel for BAKTA DB
+    // ----------------------------------------------------------------
     ch_bakta_db = Channel.value(true) 
 
-    // Preparar inputs para Bakta
+    // ----------------------------------------------------------------
+    // Preparing inputs for BAKTA 
+    // ----------------------------------------------------------------
     ch_for_bakta = spades_result.map { tuple ->
         def (sample_id, fasta) = tuple
         return [sample_id, fasta]
     }
 
-    // Ejecutar Bakta
+    // ----------------------------------------------------------------
+    // Executing BAKTA
+    // ----------------------------------------------------------------
     BAKTA(ch_for_bakta)
 
-
-    //  JOIN correcto por sample_id
+    // ----------------------------------------------------------------
+    // Preparing inputs for AMRFINDERPLUS 
+    // ----------------------------------------------------------------
     amrfinder_input = spades_result.join(mlst_result)
 
-    // Ejecutar
+    // ----------------------------------------------------------------
+    // Executing AMRFINDERPLUS
+    // ----------------------------------------------------------------
     amrfinder_result = amrfinder_input | AMRFINDERPLUS
 
-    // Virulence genes with ABRICATE (VFDB)
-    
+    // ----------------------------------------------------------------
+    // Channel for ABRICATE DATABASE
+    // ----------------------------------------------------------------
     abricate_db_ch = ABRICATE_DB()
 
-   
+    // ----------------------------------------------------------------
+    // Preparing inputs for ABRICATE
+    // ----------------------------------------------------------------
         abricate_input = spades_result
         .combine(abricate_db_ch)
         .map { sample_id, assembly, db ->
             tuple(sample_id, assembly, db)
         }
+    // ----------------------------------------------------------------
+    // Executing ABRICATE
+    // ----------------------------------------------------------------
+    abricate_results = abricate_input | ABRICATE_VF
 
-    abricate_results = abricate_input | ABRICATE_VFDB
-
+    // ----------------------------------------------------------------
+    // Executing MOB_RECON
+    // ----------------------------------------------------------------
     mob_result = spades_result | MOB_RECON
 
-
-    
-
-    
-    // 1. Descarga/Carga de DB
+    // ----------------------------------------------------------------
+    // Database for KAPTIVE
+    // ----------------------------------------------------------------
     KAPTIVE_DB()
 
-    // 2. Unir los resultados de Spades (ID, Assembly) con MLST (ID, TSV)
-    // Esto crea un canal de tuplas: [sample_id, assembly, mlst_tsv]
+    // ----------------------------------------------------------------
+    // Preparing inputs for KAPTIVE
+    // ----------------------------------------------------------------
     kaptive_sample_ch = spades_result.join(mlst_result)
-
-    // 3. Ejecución de KAPTIVE
-    // Pasamos dos argumentos separados como pide el módulo:
-    //   - El canal de las muestras
-    //   - El canal de la DB (usando .collect() para que sea un solo objeto disponible para todos)
+    
+    // ----------------------------------------------------------------
+    // Executing KAPTIVE: Two separate arguments, one for the 
+    // sample channel and one for the DB channel
+    // ----------------------------------------------------------------
     KAPTIVE(
         kaptive_sample_ch, 
         KAPTIVE_DB.out.db_files.collect()
     )
     
+    // ----------------------------------------------------------------
+    // Preparing inputs for Ectyper
+    // ----------------------------------------------------------------
+    ectyper_input = spades_result
+    .join(mlst_result)
 
-    
+    // ----------------------------------------------------------------
+    // Executing ECTYPER
+    // ----------------------------------------------------------------
+    ECTYPER(ectyper_input)
 
+    // ----------------------------------------------------------------
+    // Preparing inputs for PASTY
+    // ----------------------------------------------------------------
+    pasty_input = spades_result
+    .join(mlst_result)
 
-
+    // ----------------------------------------------------------------
+    // Executing PASTY
+    // ----------------------------------------------------------------
+    PASTY(pasty_input)
 
     
 }

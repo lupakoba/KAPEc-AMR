@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 
 process AMRFINDERPLUS {
 
-    tag "AMRFinderPlus: ${sample_id}"
+    tag "Prediction of AMR determinants for genome ${sample_id}"
 
     container "${params.amrfinder_container}"
 

@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 
 process QUAST {
 
-    tag "${sample_id}"
+    tag "QC of assembly for sample ${sample_id}"
 
     publishDir "${params.outdir}/quast", mode: 'copy'
 

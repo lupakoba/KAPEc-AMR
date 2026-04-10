@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 
 process ABRICATE_DB {
 
-    tag "Abricate DB (VFDB)"
+    tag "Preparing ABRICATE database"
 
     container "${params.abricate_container}"
 

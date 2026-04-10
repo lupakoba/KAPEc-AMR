@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-process fastqc_trimmed {
+process FASTQC_TRIMMED {
 
     tag "QC of trimmed reads for sample ${sample_id}"
 

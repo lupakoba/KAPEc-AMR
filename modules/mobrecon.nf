@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 
 process MOB_RECON {
 
-    tag "MOB_recon: ${sample_id}"
+    tag "Plasmid inference for genome ${sample_id}"
 
     container 'docker://quay.io/biocontainers/mob_suite:3.1.9--pyhdfd78af_1'
 
