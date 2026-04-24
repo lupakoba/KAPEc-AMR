@@ -19,7 +19,7 @@ process ABRICATE_DB {
 
     mkdir -p \$ABRICATE_DB
 
-    # Solo descarga si no existe VFDB
+    # Check if the ABRICATE database is already set up, otherwise set it up
     if [ ! -d "\$ABRICATE_DB/vfdb" ]; then
         abricate --setupdb
     fi

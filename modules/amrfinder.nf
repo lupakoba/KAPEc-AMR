@@ -22,12 +22,12 @@ process AMRFINDERPLUS {
     """
     set -euo pipefail
 
-    # Extraer organismo desde MLST
+    # Extract and normalize organism name from MLST result
     organism=\$(head -n1 ${mlst_result} | cut -f2 | sed 's/_/ /g' | tr '[:upper:]' '[:lower:]')
 
     echo "Detected organism: \$organism"
 
-    # 🔥 Normalización robusta MLST → AMRFinder
+    # Name normalization for AMRFinderPlus
     case "\$organism" in
         *ecoli*)
             genus="Escherichia"
@@ -47,7 +47,7 @@ process AMRFINDERPLUS {
             ;;
     esac
 
-    # Validar que el género sea reconocido por AMRFinder
+    # Validation, otherwise runs without --organism flag
     case "\$genus" in
         Escherichia|Klebsiella_pneumoniae|Acinetobacter_baumannii|Pseudomonas_aeruginosa)
             org_flag="--organism \$genus"
@@ -61,11 +61,12 @@ process AMRFINDERPLUS {
     echo "Normalized genus: \$genus"
     echo "Using org_flag: \$org_flag"
 
-    # Ejecutar AMRFinderPlus
+    
     amrfinder \\
         --nucleotide ${assembly} \\
         \$org_flag \\
         --threads ${task.cpus} \\
-        --output ${sample_id}_amrfinder.tsv
+        --output ${sample_id}_amrfinder.tsv \\
+        --plus
     """
 }

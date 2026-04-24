@@ -9,7 +9,7 @@ process KAPTIVE_DB {
     """
     set -euo pipefail
 
-    # Lista de archivos requeridos (Acinetobacter y Klebsiella)
+    # Require Kaptive database files
     FILES=(
         "Acinetobacter_baumannii_k_locus_primary_reference.gbk"
         "Acinetobacter_baumannii_OC_locus_primary_reference.gbk"
@@ -30,7 +30,7 @@ process KAPTIVE_DB {
         fi
     done
 
-    # Si falta algún archivo, lanzar error con la lista completa de faltantes
+    # ERROR announcement if any database files are missing
     if [ \${#MISSING_FILES[@]} -ne 0 ]; then
         echo "======================================================================="
         echo " ERROR: The following Kaptive GBK files were not found in:"

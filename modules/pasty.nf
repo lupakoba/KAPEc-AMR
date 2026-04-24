@@ -26,7 +26,7 @@ process PASTY {
             --input ${assembly} \\
             --outdir pasty_out
 
-        # 🔹 buscar TSV generado
+        
         TSV_FILE=\$(find pasty_out -name "*.tsv" | head -n1)
 
         if [[ -f "\$TSV_FILE" ]]; then

@@ -18,15 +18,15 @@ process KAPTIVE {
     """
     set -euo pipefail
 
-    # 1. Extraer especie y limpiar (ej: "K. pneumoniae" -> "klebsiellapneumoniae")
+    # Extract species from MLST TSV
     species_raw=\$(head -n1 ${mlst_tsv} | cut -f2 | tr '[:upper:]' '[:lower:]')
     species_clean=\$(echo "\$species_raw" | sed 's/[^a-z]//g')
 
-    # 2. Lógica de ejecución por especie
+    # Execution logic by species
     if [[ "\$species_clean" == *"acinetobacter"* || "\$species_clean" == *"abaumannii"* ]]; then
         echo "Running Kaptive for Acinetobacter..."
         
-        # Grep específico para Acinetobacter
+        
         K_DB=\$(ls *.gbk | grep -i "Acinetobacter" | grep -i "k_locus" | head -n1)
         OC_DB=\$(ls *.gbk | grep -i "Acinetobacter" | grep -i "OC_locus" | head -n1)
 
@@ -36,9 +36,8 @@ process KAPTIVE {
     elif [[ "\$species_clean" == *"klebsiella"* || "\$species_clean" == *"pneumoniae"* ]]; then
         echo "Running Kaptive for Klebsiella..."
         
-        # Grep específico para Klebsiella
+        
         K_DB=\$(ls *.gbk | grep -i "Klebsiella" | grep -i "k_locus" | head -n1)
-        # Usamos grep -v para evitar el k_locus y agarrar el o_locus/v_locus
         O_DB=\$(ls *.gbk | grep -i "Klebsiella" | grep -v -i "k_locus" | head -n1)
 
         kaptive assembly "\$K_DB" "${assembly}" -o "${sample_id}_kaptive_kl.tsv"

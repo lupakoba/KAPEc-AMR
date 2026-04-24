@@ -22,7 +22,7 @@ process SPADES_ASSEMBLY {
     """
     set -euo pipefail
 
-    # Ejecutar SPAdes
+    
     spades.py \\
         --pe1-1 ${reads[0]} \\
         --pe1-2 ${reads[1]} \\
@@ -32,7 +32,7 @@ process SPADES_ASSEMBLY {
         --isolate \\
         -k auto
 
-    # Filtrar contigs >= 200 bp
+    # Filter and delete contigs shorter than 200 bp, also rename as isolate.fasta
     if [ -f spades_${sample_id}/contigs.fasta ]; then
         awk '
         /^>/ {

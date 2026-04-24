@@ -4,7 +4,7 @@ nextflow.enable.dsl=2
 // ------------------------
 // Parámetros de entrada
 // ------------------------
-params.input       = params.input ?: 'data/*_{R1,R2}.fastq.gz'
+params.input = params.input ?: 'data/*_{R1,R2}.fastq.gz'
 params.kraken2_db  = params.kraken2_db ?: '/PROJECTES/MICROBIOLOGIA/luciano/KAPEc-AMR/db/kraken_db'
 params.outdir      = params.outdir ?: 'results'
 

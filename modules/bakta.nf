@@ -21,26 +21,28 @@ process BAKTA {
 
     script:
     """
-    # 1. Crear un directorio temporal local al proceso
+    
     mkdir -p tmp_bakta
 
-    # 2. Exportar variables para forzar a Bakta y tRNAscan-SE a usar este espacio
+    # Export variables for Bakta
     export TMPDIR=\$PWD/tmp_bakta
     export TMP=\$PWD/tmp_bakta
     export TEMP=\$PWD/tmp_bakta
     export MPLCONFIGDIR=.
 
-    # 3. Ejecución de Bakta
+    
     bakta \\
         --db /db \\
         --output $sample_id \\
         --prefix $sample_id \\
         --threads $task.cpus \\
         --tmp-dir \$PWD/tmp_bakta \\
+        --locus-tag $sample_id \\
         --skip-plot \\
+        --keep-contig-headers \\
         $fasta
 
-    # 4. Registro de versiones
+    # Version information
     cat <<-END_VERSIONS > versions.yml
     "BAKTA":
         bakta: \$(bakta --version 2>&1 | sed 's/^bakta //')

@@ -5,32 +5,20 @@ process KRAKEN2 {
 
     tag "Taxonomic classification for sample ${sample_id}"
 
-    // Contenedor
     container "${params.kraken2_container}"
 
-    // Carpeta de salida
     publishDir "results/kraken2", mode: 'copy'
 
-    // Recursos
     cpus params.kraken2_threads
     memory '16 GB'
-    maxForks 1
-
-    // ------------------------
-    // Inputs
-    // ------------------------
+    
     input:
-    tuple val(sample_id), path(reads), path(db_file)  // 3 inputs obligatorios
+    tuple val(sample_id), path(reads), path(db_file)  
 
-    // ------------------------
-    // Outputs
-    // ------------------------
     output:
     tuple val(sample_id), path("${sample_id}_kraken_report.txt")
 
-    // ------------------------
-    // Script de ejecución
-    // ------------------------
+    
     script:
     """
     kraken2 \

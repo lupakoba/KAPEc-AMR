@@ -16,11 +16,11 @@ process ECTYPER {
     """
     set -euo pipefail
 
-    # 1. Extraer especie y limpiar
+    # Extract species information from MLST 
     species_raw=\$(head -n1 ${mlst_tsv} | cut -f2 | tr '[:upper:]' '[:lower:]')
     species_clean=\$(echo "\$species_raw" | sed 's/[^a-z]//g')
 
-    # 2. Lógica de ejecución
+    # Logic for E.coli only
     if [[ "\$species_clean" == *"escherichia"* || "\$species_clean" == *"ecoli"* ]]; then
         echo "Running ECTyper for Escherichia coli..."
 
@@ -31,7 +31,7 @@ process ECTYPER {
     else
         echo "Species \$species_raw not supported by ECTyper (only E. coli)." > ${sample_id}_species_not_supported.txt
         
-        # Crear output vacío para mantener consistencia del canal
+        # Creat empty output file for not breaking pipeline
         touch "${sample_id}_ectyper.tsv"
     fi
     """
