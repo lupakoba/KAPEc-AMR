@@ -1,7 +1,7 @@
 # KAPEc-AMR
 INTRODUCTION
 
-This repository is for antimicrobial resistance analysis of sequenced isolates, focused on KAPEc bacteria (Klebsiella, Acinetobacter, Pseudomonas and Escherichia) and built on nextflow. Compatible with docker (usage in standalone computers) or Singularity (High Performance Cluster), see -profile for these options. We will provide pipelines both for Illumina and Nanopore reads separatedly. 
+This repository is for antimicrobial resistance analysis of Illumina sequenced isolates, focused on KAPEc bacteria (Klebsiella, Acinetobacter, Pseudomonas and Escherichia) and built on nextflow. Compatible with docker (usage in standalone computers) or Singularity (High Performance Cluster), see -profile for these options. 
 
 Illumina pipeline summary: It uses NAME_R1.fastq.gz and NAME_R2.fastq.gz files on /data folder, you do not need to put R1/R2 files in separate directories, just all the read files in /data folder. Please ensure that the R1/R2 files have the same isolate/strain name, otherwise it will not recognise them:
 
@@ -73,7 +73,7 @@ OPTIONS
 
 
 
-Nanopore pipeline summary: Work in progress... :P
+
 
 
 
