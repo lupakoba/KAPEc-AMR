@@ -71,7 +71,64 @@ OPTIONS
                 (-profile singularity_slurm) but have not been tested yet.
 
 
+## Acknowledgments
 
+This pipeline is built with [Nextflow](https://www.nextflow.io/) (DSL2) and relies on the following open-source tools. If you use KAPEc-AMR in your work, please cite this repository together with the underlying tools listed below.
+
+| Step | Tool | Repository |
+|---|---|---|
+| Workflow engine | Nextflow | https://github.com/nextflow-io/nextflow |
+| Raw read QC | FastQC | https://github.com/s-andrews/FastQC |
+| Read trimming/filtering | fastp | https://github.com/OpenGene/fastp |
+| Report aggregation | MultiQC | https://github.com/MultiQC/MultiQC |
+| Taxonomic identification | Kraken2 | https://github.com/DerrickWood/kraken2 |
+| De novo assembly | SPAdes | https://github.com/ablab/spades |
+| Assembly quality metrics | QUAST | https://github.com/ablab/quast |
+| Completeness/contamination | CheckM2 | https://github.com/chklovski/CheckM2 |
+| MLST | mlst | https://github.com/tseemann/mlst |
+| Gene annotation | Bakta | https://github.com/oschwengers/bakta |
+| AMR gene prediction | AMRFinderPlus | https://github.com/ncbi/amr |
+| Virulence factor prediction | ABRicate + VFDB | https://github.com/tseemann/abricate |
+| Plasmid reconstruction/typing | MOB-suite (MOB-recon) | https://github.com/phac-nml/mob-suite |
+| Capsule/O-antigen typing | Kaptive | https://github.com/klebgenomics/Kaptive |
+| *E. coli* serotyping | ECTyper | https://github.com/phac-nml/ecoli_serotyping |
+| *Pseudomonas* serotyping | pasty | https://github.com/rpetit3/pasty |
+
+### References
+
+1. Di Tommaso, P., Chatzou, M., Floden, E. W., Barja, P. P., Palumbo, E., & Notredame, C. (2017). Nextflow enables reproducible computational workflows. *Nature Biotechnology*, 35(4), 316–319. https://doi.org/10.1038/nbt.3820
+
+2. Andrews, S. (2010). *FastQC: A Quality Control Tool for High Throughput Sequence Data* [Software]. Babraham Bioinformatics. http://www.bioinformatics.babraham.ac.uk/projects/fastqc/
+
+3. Chen, S., Zhou, Y., Chen, Y., & Gu, J. (2018). fastp: an ultra-fast all-in-one FASTQ preprocessor. *Bioinformatics*, 34(17), i884–i890. https://doi.org/10.1093/bioinformatics/bty560
+
+4. Ewels, P., Magnusson, M., Lundin, S., & Käller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. *Bioinformatics*, 32(19), 3047–3048. https://doi.org/10.1093/bioinformatics/btw354
+
+5. Wood, D. E., Lu, J., & Langmead, B. (2019). Improved metagenomic analysis with Kraken 2. *Genome Biology*, 20, 257. https://doi.org/10.1186/s13059-019-1891-0
+
+6. Bankevich, A., Nurk, S., Antipov, D., Gurevich, A. A., Dvorkin, M., Kulikov, A. S., Lesin, V. M., Nikolenko, S. I., Pham, S., Prjibelski, A. D., Pyshkin, A. V., Sirotkin, A. V., Vyahhi, N., Tesler, G., Alekseyev, M. A., & Pevzner, P. A. (2012). SPAdes: a new genome assembly algorithm and its applications to single-cell sequencing. *Journal of Computational Biology*, 19(5), 455–477. https://doi.org/10.1089/cmb.2012.0021
+
+7. Gurevich, A., Saveliev, V., Vyahhi, N., & Tesler, G. (2013). QUAST: quality assessment tool for genome assemblies. *Bioinformatics*, 29(8), 1072–1075. https://doi.org/10.1093/bioinformatics/btt086
+
+8. Chklovski, A., Parks, D. H., Woodcroft, B. J., & Tyson, G. W. (2023). CheckM2: a rapid, scalable and accurate tool for assessing microbial genome quality using machine learning. *Nature Methods*, 20(8), 1203–1212. https://doi.org/10.1038/s41592-023-01940-w
+
+9. Seemann, T. *mlst: Scan contig files against PubMLST typing schemes* [Software]. https://github.com/tseemann/mlst (uses the PubMLST database, Jolley, K. A., Bray, J. E., & Maiden, M. C. J. (2018). Open-access bacterial population genomics: BIGSdb software, the PubMLST.org website and their applications. *Wellcome Open Research*, 3, 124.)
+
+10. Schwengers, O., Jelonek, L., Dieckmann, M. A., Beyvers, S., Blom, J., & Goesmann, A. (2021). Bakta: rapid and standardized annotation of bacterial genomes via alignment-free sequence identification. *Microbial Genomics*, 7(11), 000685. https://doi.org/10.1099/mgen.0.000685
+
+11. Feldgarden, M., Brover, V., Gonzalez-Escalona, N., Frye, J. G., Haendiges, J., Haft, D. H., Hoffmann, M., Pettengill, J. B., Prasad, A. B., Tillman, G. E., Tyson, G. H., & Klimke, W. (2021). AMRFinderPlus and the Reference Gene Catalog facilitate examination of the genomic links among antimicrobial resistance, stress response, and virulence. *Scientific Reports*, 11, 12728. https://doi.org/10.1038/s41598-021-91456-0
+
+12. Seemann, T. *ABRicate: Mass screening of contigs for antimicrobial and virulence genes* [Software]. https://github.com/tseemann/abricate — virulence database: Chen, L. et al. (2016). VFDB 2016: hierarchical and refined dataset for big data analysis—10 years on. *Nucleic Acids Research*, 44(D1), D694–D697. https://doi.org/10.1093/nar/gkv1239
+
+13. Robertson, J., & Nash, J. H. E. (2018). MOB-suite: software tools for clustering, reconstruction and typing of plasmids from draft assemblies. *Microbial Genomics*, 4(8), e000206. https://doi.org/10.1099/mgen.0.000206
+
+14. Lam, M. M. C., Wick, R. R., Judd, L. M., Holt, K. E., & Wyres, K. L. (2022). Kaptive 2.0: updated capsule and lipopolysaccharide locus typing for the *Klebsiella pneumoniae* species complex. *Microbial Genomics*, 8(3), 000800. https://doi.org/10.1099/mgen.0.000800
+
+15. Bessonov, K., Laing, C., Robertson, J., Yong, I., Ziebell, K., Gannon, V. P. J., Nash, J. H. E., Christianson, S., Bekal, S., Reimer, A., Taboada, E., Domselaar, G. V., & Graham, M. (2021). ECTyper: in silico *Escherichia coli* serotype and species prediction from raw and assembled whole-genome sequence data. *Microbial Genomics*, 7(12), 000728. https://doi.org/10.1099/mgen.0.000728
+
+16. Petit III, R. A. *pasty: In silico serogrouping of Pseudomonas aeruginosa isolates* [Software]. https://github.com/rpetit3/pasty (based on the original PAst method: Thrane, S. W. et al. (2016). *Pseudomonas aeruginosa* Typer (PAst): a web tool for rapid and accurate in silico serotyping of *Pseudomonas aeruginosa* isolates. *Journal of Clinical Microbiology*, 54(6), 1782–1788.)
+
+*Container execution is provided via [Docker](https://www.docker.com/) or [Singularity/Apptainer](https://apptainer.org/), depending on the `-profile` selected.*
 
 
 
